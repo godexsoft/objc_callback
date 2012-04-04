@@ -1,0 +1,71 @@
+--- C++ to Objective-C callbacks. ---
+
+---------
+Requires:
+
+- Boost.Preprocessor
+
+----------------
+Compatible with:
+
+- Boost.Function
+- Boost.Signals
+- Probably others :-)
+
+---------------
+Usage examples:
+
+// in obj-c (ViewController for example):
+// ...
+- (void) emptyCallback 
+{
+	NSLog(@"In empty callback");
+}
+
+- (void) update:(float)delta
+{ 
+	// ... update something
+}
+
+- (int) mainWithArgc:(int)argc andArgv:(char**)argv
+{
+	// ... do something
+	// and return a value
+	return 0;
+}
+
+- (void) signalCallback
+{
+	// same as emptyCallback
+}
+
+boost::function<void()> cb1 = objc_callback<void()>(@selector(emptyCallback), self);
+boost::function<void(float)> cb2 = objc_callback<void(float)>(@selector(update:), self);
+boost::function<int(int, char**)> cb3 = objc_callback<int(int, char**)>(@selector(mainWithArgc:andArgv:), self);
+
+// alternative (portable syntax):
+boost::function1<void, float> cb2 = objc_callback_1<void, float>(@selector(update:), self);
+
+// Boost.Signals example:
+boost::signal<void()> sig;
+sig.connect( objc_callback<void()>(@selector(signalCallback), self) );
+
+// somewhere else in c++-lands (your cross-platform c++ core application for example):
+int main_app::run(int argc, char** argv)
+{
+	// ... somewhere later
+	// ...
+
+	// just invoke the callback
+	cb1();
+
+	// update 
+	float delta = now() - last_update;
+	cb2(delta);
+
+	// run main (just example)
+	int ret = cb3(argc, argv);
+
+	// signal
+	sig();
+}
