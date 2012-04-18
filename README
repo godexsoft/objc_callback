@@ -3,7 +3,11 @@
 ---------
 Requires:
 
+For c++03 version:
 - Boost.Preprocessor
+
+For c++11 version:
+- Nothing other than variadic templates
 
 ----------------
 Compatible with:
@@ -49,6 +53,9 @@ boost::function1<void, float> cb2 = objc_callback_1<void, float>(@selector(updat
 // Boost.Signals example:
 boost::signal<void()> sig;
 sig.connect( objc_callback<void()>(@selector(signalCallback), self) );
+
+// C++11 example:
+auto cb = objc_callback<void(float)>(@selector(update:), self);
 
 // somewhere else in c++-lands (your cross-platform c++ core application for example):
 int main_app::run(int argc, char** argv)
